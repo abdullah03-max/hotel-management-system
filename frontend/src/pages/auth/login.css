@@ -1,0 +1,682 @@
+/* =========================
+   LOGIN PAGE STYLES
+========================= */
+.login-page {
+  min-height: 100vh;
+  background: #f7f7f7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+/* =========================
+   LOGIN HEADER
+========================= */
+.login-header {
+  background: rgba(0, 0, 0, 0.8);
+  padding: 18px 0;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 10;
+}
+
+.login-nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.login-logo {
+  color: white;
+  font-size: 28px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.login-nav-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.login-nav-btn {
+  background: transparent;
+  color: white;
+  border: 1px solid white;
+  padding: 8px 18px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s ease;
+  font-family: "Poppins", sans-serif;
+}
+
+.login-nav-btn:hover {
+  background: white;
+  color: black;
+}
+
+.login-nav-btn.register {
+  background: #d4a762;
+  border-color: #d4a762;
+  color: black;
+}
+
+.login-nav-btn.register:hover {
+  background: #b88e50;
+  border-color: #b88e50;
+}
+
+/* =========================
+   ROLE SELECTION SCREEN
+========================= */
+.role-selection-container {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.role-selection-header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.role-selection-title {
+  font-size: 42px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 15px;
+}
+
+.role-selection-subtitle {
+  font-size: 18px;
+  color: #666;
+  margin: 0;
+}
+
+/* =========================
+   ROLE GRID
+========================= */
+.role-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 30px;
+  margin-bottom: 40px;
+}
+
+.role-card {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+
+.role-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15);
+  border-color: #d4a762;
+}
+
+.role-card-content {
+  padding: 35px 30px;
+  text-align: center;
+}
+
+.role-icon {
+  font-size: 60px;
+  margin-bottom: 20px;
+}
+
+.role-card-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 15px;
+}
+
+.role-card-description {
+  font-size: 15px;
+  color: #666;
+  line-height: 1.5;
+  margin: 0 0 20px;
+}
+
+.role-card-footer {
+  background: rgba(0, 0, 0, 0.05);
+  padding: 15px 30px;
+  text-align: center;
+}
+
+.role-card-action {
+  color: #d4a762;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* =========================
+   DEMO CREDENTIALS SECTION
+========================= */
+.demo-section {
+  background: rgba(212, 167, 98, 0.1);
+  border: 1px solid rgba(212, 167, 98, 0.3);
+  border-radius: 15px;
+  padding: 25px;
+  margin-bottom: 30px;
+}
+
+.demo-section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #b88e50;
+  margin: 0 0 15px;
+  text-align: center;
+}
+
+.demo-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.demo-btn {
+  background: #d4a762;
+  color: black;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: "Poppins", sans-serif;
+}
+
+.demo-btn:hover {
+  background: #b88e50;
+  transform: translateY(-2px);
+}
+
+.demo-btn.admin {
+  background: #dc2626;
+  color: white;
+}
+
+.demo-btn.admin:hover {
+  background: #b91c1c;
+}
+
+.demo-btn.receptionist {
+  background: #2563eb;
+  color: white;
+}
+
+.demo-btn.receptionist:hover {
+  background: #1d4ed8;
+}
+
+.demo-btn.guest {
+  background: #059669;
+  color: white;
+}
+
+.demo-btn.guest:hover {
+  background: #047857;
+}
+
+/* =========================
+   DEBUG TOOLS SECTION
+========================= */
+.debug-section {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 15px;
+  padding: 25px;
+  margin-bottom: 30px;
+}
+
+.debug-section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #d97706;
+  margin: 0 0 15px;
+  text-align: center;
+}
+
+.debug-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.debug-btn {
+  background: #f59e0b;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: "Poppins", sans-serif;
+}
+
+.debug-btn:hover {
+  background: #d97706;
+  transform: translateY(-2px);
+}
+
+.debug-btn.clear {
+  background: #dc2626;
+}
+
+.debug-btn.clear:hover {
+  background: #b91c1c;
+}
+
+/* =========================
+   REGISTER LINK
+========================= */
+.register-link {
+  text-align: center;
+  margin-top: 30px;
+}
+
+.register-text {
+  color: #666;
+  font-size: 16px;
+  margin: 0;
+}
+
+.register-btn {
+  background: none;
+  border: none;
+  color: #d4a762;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 16px;
+  text-decoration: underline;
+  transition: color 0.3s ease;
+}
+
+.register-btn:hover {
+  color: #b88e50;
+}
+
+/* =========================
+   LOGIN FORM
+========================= */
+.login-form-container {
+  max-width: 500px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.login-form-card {
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+}
+
+/* =========================
+   BACK BUTTON
+========================= */
+.back-button {
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.3s ease;
+  margin-bottom: 20px;
+  font-family: "Poppins", sans-serif;
+}
+
+.back-button:hover {
+  color: #333;
+}
+
+/* =========================
+   LOGIN HEADER
+========================= */
+.login-form-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.login-role-icon {
+  font-size: 50px;
+  margin-bottom: 15px;
+}
+
+.login-form-title {
+  font-size: 32px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 10px;
+}
+
+.login-form-subtitle {
+  font-size: 16px;
+  color: #666;
+  margin: 0 0 10px;
+}
+
+.role-note {
+  font-size: 12px;
+  color: #d4a762;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* =========================
+   ERROR MESSAGE
+========================= */
+.login-error {
+  background: rgba(220, 38, 38, 0.1);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  color: #dc2626;
+  padding: 15px 20px;
+  border-radius: 10px;
+  margin-bottom: 25px;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* =========================
+   FORM STYLES
+========================= */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.form-input {
+  padding: 14px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 10px;
+  font-size: 15px;
+  font-family: "Poppins", sans-serif;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #d4a762;
+  box-shadow: 0 0 0 3px rgba(212, 167, 98, 0.1);
+}
+
+.form-input::placeholder {
+  color: #999;
+}
+
+/* =========================
+   SUBMIT BUTTON
+========================= */
+.login-submit-btn {
+  background: linear-gradient(135deg, #d4a762, #b88e50);
+  color: black;
+  border: none;
+  padding: 16px 30px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  font-family: "Poppins", sans-serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+.login-submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(212, 167, 98, 0.4);
+}
+
+.login-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.login-submit-btn:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+/* =========================
+   LOADING SPINNER
+========================= */
+.login-loading {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: black;
+  animation: spin 1s ease-in-out infinite;
+  margin-right: 10px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* =========================
+   DEMO CREDENTIALS PANEL
+========================= */
+.demo-credentials-panel {
+  background: rgba(212, 167, 98, 0.05);
+  border: 1px solid rgba(212, 167, 98, 0.2);
+  border-radius: 15px;
+  padding: 25px;
+  margin-top: 25px;
+}
+
+.demo-credentials-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #b88e50;
+  margin: 0 0 15px;
+  text-align: center;
+}
+
+.credentials-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 15px;
+}
+
+.credential-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #666;
+}
+
+.credential-label {
+  font-weight: 600;
+}
+
+.credential-note {
+  font-size: 11px;
+  color: #d4a762;
+  text-align: center;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* =========================
+   STAFF ROLE SELECTION
+========================= */
+.staff-role-container {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.staff-role-header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.staff-role-title {
+  font-size: 36px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 10px;
+}
+
+.staff-role-subtitle {
+  font-size: 18px;
+  color: #666;
+  margin: 0;
+}
+
+.staff-role-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 25px;
+}
+
+/* =========================
+   RESPONSIVE DESIGN
+========================= */
+@media (max-width: 1024px) {
+  .role-grid,
+  .staff-role-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .login-page {
+    padding: 20px 15px;
+  }
+  
+  .role-selection-title,
+  .staff-role-title {
+    font-size: 32px;
+  }
+  
+  .login-form-card {
+    padding: 30px 25px;
+  }
+  
+  .login-form-title {
+    font-size: 28px;
+  }
+  
+  .demo-buttons,
+  .debug-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .demo-btn,
+  .debug-btn {
+    width: 200px;
+  }
+  
+  .login-header {
+    position: relative;
+    background: #333;
+  }
+  
+  .login-nav-container {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .login-nav-buttons {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .role-grid,
+  .staff-role-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .role-card-content {
+    padding: 25px 20px;
+  }
+  
+  .login-form-card {
+    padding: 25px 20px;
+  }
+  
+  .login-form-title {
+    font-size: 24px;
+  }
+  
+  .form-input {
+    padding: 12px 14px;
+    font-size: 14px;
+  }
+  
+  .login-submit-btn {
+    padding: 14px 25px;
+    font-size: 15px;
+  }
+  
+  .demo-section,
+  .debug-section {
+    padding: 20px;
+  }
+}
+
+/* =========================
+   ANIMATIONS
+========================= */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.role-card,
+.login-form-card {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.demo-section,
+.debug-section {
+  animation: fadeInUp 0.8s ease-out;
+}

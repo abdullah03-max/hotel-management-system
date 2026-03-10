@@ -1,0 +1,330 @@
+/* =========================
+   GLOBAL STYLES
+========================= */
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
+  background: #f7f7f7;
+}
+
+.container {
+  width: 90%;
+  margin: auto;
+  max-width: 1200px;
+}
+
+/* =========================
+   HEADER
+========================= */
+.header {
+  background: rgba(0, 0, 0, 0.6);
+  padding: 18px 0;
+  position: absolute;
+  width: 100%;
+  z-index: 10;
+}
+
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  color: white;
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.nav-btn {
+  background: transparent;
+  color: white;
+  border: 1px solid white;
+  padding: 8px 18px;
+  margin-left: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.nav-btn:hover {
+  background: white;
+  color: black;
+}
+
+/* =========================
+   HERO SECTION
+========================= */
+.hero {
+  height: 95vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-slideshow {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.hero-slide {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 1.2s ease-in-out;
+}
+
+.hero-slide.active {
+  opacity: 1;
+}
+
+.hero-content {
+  position: absolute;
+  bottom: 15%;
+  left: 8%;
+  color: white;
+}
+
+.hero-content h2 {
+  font-size: 48px;
+  margin: 0 0 10px;
+}
+
+.hero-content p {
+  font-size: 20px;
+}
+
+.cta-button {
+  margin-top: 15px;
+  padding: 12px 28px;
+  background: #d4a762;
+  border: none;
+  color: black;
+  font-size: 18px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: 0.3s ease;
+}
+
+.cta-button:hover {
+  background: #b88e50;
+}
+
+/* =========================
+   ABOUT SECTION
+========================= */
+.about {
+  padding: 80px 0;
+  background: white;
+}
+
+.about-container {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.about-text h2 {
+  font-size: 34px;
+}
+
+.about-text p {
+  margin-top: 12px;
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+.about-btn {
+  margin-top: 20px;
+  padding: 12px 25px;
+  border: none;
+  background: #d4a762;
+  color: black;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.about-img {
+  width: 45%;
+  border-radius: 10px;
+}
+
+/* =========================
+   GALLERY SECTION
+========================= */
+.gallery {
+  padding: 80px 0;
+}
+
+.gallery-title {
+  text-align: center;
+  font-size: 32px;
+  margin-bottom: 40px;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+}
+
+.gallery-item {
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.gallery-item img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  transition: 0.5s ease;
+}
+
+.gallery-item:hover img {
+  transform: scale(1.1);
+}
+
+.gallery-overlay {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background: linear-gradient(transparent, rgba(0,0,0,0.8));
+  padding: 10px;
+  text-align: center;
+  color: white;
+}
+
+/* =========================
+   FLOATING QUICK-ACTION MENU
+========================= */
+.floating-menu {
+  position: fixed;
+  bottom: 35px;
+  right: 35px;
+  z-index: 50;
+}
+
+.fab-main {
+  background: #d4a762;
+  color: black;
+  border: none;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  font-size: 24px;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.fab-main:hover {
+  background: #b88e50;
+}
+
+.fab-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+  display: none;
+}
+
+.floating-menu:hover .fab-options {
+  display: flex;
+}
+
+.fab-options button {
+  background: white;
+  border: 1px solid #d4a762;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.3s ease;
+}
+
+.fab-options button:hover {
+  background: #d4a762;
+}
+
+/* =========================
+   FOOTER
+========================= */
+.footer {
+  background: #222;
+  color: white;
+  padding: 50px 0 20px;
+  margin-top: 50px;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+}
+
+.footer-section h3,
+.footer-section h4 {
+  margin-bottom: 10px;
+}
+
+.footer-section ul {
+  list-style: none;
+  padding: 0;
+}
+
+.footer-section ul button {
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  margin-bottom: 5px;
+}
+
+.footer-bottom {
+  text-align: center;
+  margin-top: 30px;
+  font-size: 14px;
+}
+
+/* =========================
+   RESPONSIVE DESIGN
+========================= */
+@media (max-width: 900px) {
+  .about-container {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .about-img {
+    width: 100%;
+  }
+
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .hero-content h2 {
+    font-size: 30px;
+  }
+}
+
+@media (max-width: 600px) {
+  .gallery-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-content {
+    bottom: 10%;
+  }
+
+  .logo {
+    font-size: 22px;
+  }
+}
