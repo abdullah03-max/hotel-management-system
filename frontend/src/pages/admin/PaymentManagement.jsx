@@ -398,7 +398,6 @@ const PaymentManagement = () => {
                   </div>
                 </div>
               </div>
-
               <div className="border-t pt-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Update Payment Status</h3>
                 <div className="flex flex-wrap gap-2">

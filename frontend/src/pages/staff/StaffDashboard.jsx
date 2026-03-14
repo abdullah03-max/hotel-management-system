@@ -1,5 +1,5 @@
 import React from 'react';
-import ReceptionistLayout from '../../components/layouts/ReceptionistLayout';
+import ReceptionistLayout from '../../components/layout/ReceptionistLayout';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
 
