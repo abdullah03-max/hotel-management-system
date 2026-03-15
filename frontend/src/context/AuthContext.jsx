@@ -74,7 +74,7 @@ export const AuthProvider = ({ children }) => {
   // Add this function to update staff last login in database
   const updateStaffLastLogin = async (staffId, lastLogin) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/staff/${staffId}`, {
+      const response = await fetch(`https://hotel-management-system-production-9e00.up.railway.app/api/staff/${staffId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -100,7 +100,7 @@ export const AuthProvider = ({ children }) => {
       console.log('🔍 Checking staff in database...');
       console.log('🎯 Selected Role for verification:', selectedRole);
       
-      const response = await fetch('http://localhost:5000/api/staff');
+      const response = await fetch('https://hotel-management-system-production-9e00.up.railway.app/api/staff');
       
       if (!response.ok) {
         console.log('❌ Database not available');

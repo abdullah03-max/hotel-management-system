@@ -98,7 +98,7 @@ const EditStaffForm = ({ staff, onClose, onStaffUpdated }) => {
       }
 
       // Send update to backend
-      const response = await fetch(`http://localhost:5000/api/staff/${staff._id}`, {
+      const response = await fetch(`https://hotel-management-system-production-9e00.up.railway.app/api/staff/${staff._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

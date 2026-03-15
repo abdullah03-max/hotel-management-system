@@ -92,7 +92,7 @@ const StaffManagement = () => {
   const fetchStaffData = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5000/api/staff');
+      const response = await fetch('https://hotel-management-system-production-9e00.up.railway.app/api/staff');
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
@@ -166,7 +166,7 @@ const StaffManagement = () => {
   const handleDeleteStaff = async (staffId) => {
     if (window.confirm('Are you sure you want to remove this staff member?')) {
       try {
-        const response = await fetch(`http://localhost:5000/api/staff/${staffId}`, {
+        const response = await fetch(`https://hotel-management-system-production-9e00.up.railway.app/api/staff/${staffId}`, {
           method: 'DELETE',
         });
 

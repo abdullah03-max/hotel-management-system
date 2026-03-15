@@ -20,7 +20,7 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     if (isAuthenticated && user) {
-      const newSocket = io('http://localhost:5000', {
+      const newSocket = io('https://hotel-management-system-production-9e00.up.railway.app', {
         transports: ['websocket'],
         auth: {
           userId: user.id,

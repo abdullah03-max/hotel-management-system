@@ -109,7 +109,7 @@ const AddStaffForm = ({ onClose, onStaffAdded }) => {
   const testBackendConnection = async () => {
     try {
       setBackendStatus('checking');
-      const response = await fetch('http://localhost:5000/api/health');
+      const response = await fetch('https://hotel-management-system-production-9e00.up.railway.app/api/health');
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -202,7 +202,7 @@ const AddStaffForm = ({ onClose, onStaffAdded }) => {
         joinDate: formData.joinDate
       };
 
-      const response = await fetch('http://localhost:5000/api/staff', {
+      const response = await fetch('https://hotel-management-system-production-9e00.up.railway.app/api/staff', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -252,7 +252,7 @@ const AddStaffForm = ({ onClose, onStaffAdded }) => {
       console.error('Error adding staff:', error);
       
       if (error.message.includes('Failed to fetch')) {
-        setError('Cannot connect to server. Please make sure the backend is running on http://localhost:5000');
+        setError('Cannot connect to server. Please make sure the backend is running on https://hotel-management-system-production-9e00.up.railway.app');
       } else if (error.message.includes('404')) {
         setError('API endpoint not found. Please check if the server routes are properly configured.');
       } else if (error.message.includes('500')) {
@@ -313,7 +313,7 @@ const AddStaffForm = ({ onClose, onStaffAdded }) => {
             </div>
             {backendStatus === 'connected' && (
               <p className="text-green-600 text-xs mt-2">
-                Server is running on http://localhost:5000
+                Server is running on https://hotel-management-system-production-9e00.up.railway.app
               </p>
             )}
             {backendStatus === 'error' && (

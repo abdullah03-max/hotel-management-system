@@ -69,7 +69,7 @@ const HousekeepingManagement = () => {
       
       // If no staff in localStorage, try to fetch from backend
       if (housekeepingStaff.length === 0) {
-        fetch('http://localhost:5000/api/staff')
+        fetch('https://hotel-management-system-production-9e00.up.railway.app/api/staff')
           .then(response => response.json())
           .then(data => {
             if (data.success) {
