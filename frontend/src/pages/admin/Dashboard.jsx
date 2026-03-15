@@ -20,7 +20,24 @@ import HousekeepingManagement from './HousekeepingManagement';
 
 const Dashboard = () => {
   const [activeSection, setActiveSection] = useState('overview');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { user } = useAuth();
+
+  const navItems = [
+    { id: 'overview', name: 'Dashboard Overview', icon: '📊' },
+    { id: 'staff', name: 'Staff Management', icon: '👥' },
+    { id: 'guests', name: 'Guest Management', icon: '👨‍👩‍👧‍👦' },
+    { id: 'rooms', name: 'Room Management', icon: '🏨' },
+    { id: 'bookings', name: 'Booking Management', icon: '📅' },
+    { id: 'payments', name: 'Payment & Billing', icon: '💳' },
+    { id: 'services', name: 'Services & Amenities', icon: '🛎️' },
+    { id: 'reports', name: 'Reports & Analytics', icon: '📈' },
+    { id: 'maintenance', name: 'Maintenance', icon: '🔧' },
+    { id: 'housekeeping', name: 'Housekeeping Management', icon: '🧹' },
+    { id: 'inventory', name: 'Inventory Management', icon: '📦' },
+    { id: 'notifications', name: 'Notifications', icon: '🔔' },
+    { id: 'system-settings', name: 'System Settings', icon: '⚙️' }
+  ];
 
   // Double protection - in case route protection fails
   if (!user || user.role !== 'admin') {
@@ -38,7 +55,7 @@ const Dashboard = () => {
   const renderSection = () => {
     switch (activeSection) {
       case 'overview':
-        return <Overview />;
+        return <Overview onQuickAction={setActiveSection} />;
       case 'staff':
         return <StaffManagement />;
       case 'guests':
@@ -70,9 +87,18 @@ const Dashboard = () => {
 
   return (
     <DashboardLayout title="Admin Dashboard">
-      <div className="flex h-screen bg-gray-50">
+      <div className="flex min-h-screen bg-gray-50 relative">
+        {isSidebarOpen && (
+          <button
+            type="button"
+            aria-label="Close menu"
+            className="fixed inset-0 bg-black/40 z-30 lg:hidden"
+            onClick={() => setIsSidebarOpen(false)}
+          />
+        )}
+
         {/* Sidebar */}
-        <div className="w-64 bg-white shadow-lg overflow-y-auto">
+        <div className={`fixed lg:static inset-y-0 left-0 z-40 w-72 max-w-[85vw] lg:w-64 bg-white shadow-lg overflow-y-auto transform transition-transform duration-200 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
           <div className="p-6 border-b">
             <h2 className="text-xl font-bold text-gray-800">Admin Panel</h2>
             <p className="text-sm text-gray-600 mt-1">Welcome, {user.name}</p>
@@ -80,24 +106,13 @@ const Dashboard = () => {
           
           <nav className="mt-6">
             <div className="px-4 space-y-1">
-              {[
-                { id: 'overview', name: 'Dashboard Overview', icon: '📊' },
-                { id: 'staff', name: 'Staff Management', icon: '👥' },
-                { id: 'guests', name: 'Guest Management', icon: '👨‍👩‍👧‍👦' },
-                { id: 'rooms', name: 'Room Management', icon: '🏨' },
-                { id: 'bookings', name: 'Booking Management', icon: '📅' },
-                { id: 'payments', name: 'Payment & Billing', icon: '💳' },
-                { id: 'services', name: 'Services & Amenities', icon: '🛎️' },
-                { id: 'reports', name: 'Reports & Analytics', icon: '📈' },
-                { id: 'maintenance', name: 'Maintenance', icon: '🔧' },
-                { id: 'housekeeping', name: 'Housekeeping Management', icon: '🧹' },
-                { id: 'inventory', name: 'Inventory Management', icon: '📦' },
-                { id: 'notifications', name: 'Notifications', icon: '🔔' },
-                { id: 'system-settings', name: 'System Settings', icon: '⚙️' }
-              ].map((item) => (
+              {navItems.map((item) => (
                 <button
                   key={item.id}
-                  onClick={() => setActiveSection(item.id)}
+                  onClick={() => {
+                    setActiveSection(item.id);
+                    setIsSidebarOpen(false);
+                  }}
                   className={`w-full text-left px-4 py-3 rounded-lg transition-colors ${
                     activeSection === item.id
                       ? 'bg-blue-100 text-blue-600 font-semibold'
@@ -113,11 +128,22 @@ const Dashboard = () => {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto min-w-0">
           {/* Header */}
           <div className="bg-white shadow-sm border-b">
-            <div className="px-8 py-4">
-              <h1 className="text-2xl font-bold text-gray-900">
+            <div className="px-4 sm:px-6 lg:px-8 py-4 flex items-center gap-3">
+              <button
+                type="button"
+                className="lg:hidden p-2 rounded-md border border-gray-300 text-gray-700"
+                onClick={() => setIsSidebarOpen(true)}
+                aria-label="Open menu"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              </button>
+
+              <h1 className="text-lg sm:text-2xl font-bold text-gray-900 break-words">
                 {activeSection === 'overview' && '📊 Dashboard Overview'}
                 {activeSection === 'staff' && '👥 Staff Management'}
                 {activeSection === 'guests' && '👨‍👩‍👧‍👦 Guest Management'}
@@ -136,7 +162,7 @@ const Dashboard = () => {
           </div>
 
           {/* Content Area */}
-          <div className="p-8">
+          <div className="p-4 sm:p-6 lg:p-8">
             {renderSection()}
           </div>
         </div>

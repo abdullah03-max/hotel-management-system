@@ -14,7 +14,7 @@ const Header = ({ onMenuClick }) => {
 
   return (
     <header className="bg-white shadow-sm border-b border-gray-200">
-      <div className="flex items-center justify-between px-6 py-4">
+      <div className="flex items-center justify-between px-4 py-3 sm:px-6 sm:py-4">
         <div className="flex items-center">
           <button
             onClick={onMenuClick}
@@ -25,17 +25,17 @@ const Header = ({ onMenuClick }) => {
             </svg>
           </button>
           
-          <div className="ml-4 lg:ml-0">
-            <h1 className="text-2xl font-bold text-gray-900">
+          <div className="ml-3 lg:ml-0 min-w-0">
+            <h1 className="text-lg sm:text-2xl font-bold text-gray-900 truncate">
               {getGreeting()}, {user?.name}!
             </h1>
-            <p className="text-gray-600 capitalize">
+            <p className="text-sm text-gray-600 capitalize truncate">
               {user?.role} Dashboard
             </p>
           </div>
         </div>
 
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-2 sm:space-x-4">
           {/* Notifications */}
           <Notifications />
 
@@ -48,7 +48,7 @@ const Header = ({ onMenuClick }) => {
               <span className="hidden md:block text-sm font-medium text-gray-700">
                 {user?.name}
               </span>
-              <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="hidden sm:block w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </button>

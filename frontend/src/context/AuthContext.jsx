@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import { authService } from '../services/authService';
 
 // Create and export AuthContext
 export const AuthContext = createContext();
@@ -190,6 +191,34 @@ export const AuthProvider = ({ children }) => {
     console.log('✅ AuthProvider ready');
   }, []);
 
+  const persistAuthenticatedUser = (authPayload) => {
+    const userData = {
+      id: authPayload._id,
+      _id: authPayload._id,
+      name: authPayload.name,
+      email: authPayload.email,
+      role: authPayload.role,
+      phone: authPayload.phone || '',
+      address: authPayload.address || '',
+      profilePicture: authPayload.profilePicture || '',
+      authProvider: authPayload.authProvider || 'local',
+      lastLogin: new Date().toISOString()
+    };
+
+    if (authPayload.token) {
+      localStorage.setItem('token', authPayload.token);
+    }
+
+    if (authPayload.refreshToken) {
+      localStorage.setItem('refreshToken', authPayload.refreshToken);
+    }
+
+    localStorage.setItem('currentUser', JSON.stringify(userData));
+    setUser(userData);
+
+    return userData;
+  };
+
   const login = async (credentials, selectedRole = null) => {
     try {
       console.log('🔐 LOGIN ATTEMPT:', credentials.email);
@@ -309,6 +338,33 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const loginWithGoogle = async (idToken) => {
+    try {
+      const result = await authService.googleLogin(idToken);
+
+      if (!result?.success || !result?.data) {
+        return {
+          success: false,
+          error: result?.message || 'Google sign-in failed.'
+        };
+      }
+
+      const authenticatedUser = persistAuthenticatedUser(result.data);
+
+      return {
+        success: true,
+        user: authenticatedUser,
+        message: result.message || 'Signed in with Google successfully.'
+      };
+    } catch (error) {
+      console.error('Google login failed:', error);
+      return {
+        success: false,
+        error: error?.response?.data?.message || 'Google sign-in failed. Please try again.'
+      };
+    }
+  };
+
   const register = async (userData) => {
     try {
       console.log('📝 REGISTRATION ATTEMPT:', userData.email);
@@ -394,6 +450,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     console.log('🚪 LOGGING OUT USER:', user?.name);
     localStorage.removeItem('token');
+    localStorage.removeItem('refreshToken');
     localStorage.removeItem('currentUser');
     
     // Also clear maintenance staff specific data
@@ -423,6 +480,7 @@ export const AuthProvider = ({ children }) => {
     user,
     login,
     register,
+    loginWithGoogle,
     logout,
     loading,
     isAuthenticated: !!user,

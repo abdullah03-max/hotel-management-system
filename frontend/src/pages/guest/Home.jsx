@@ -5,6 +5,7 @@ import './HotelHomepage.css';
 
 const Home = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const [isFabOpen, setIsFabOpen] = useState(false);
   const navigate = useNavigate();
   const { settings } = useSettings(); // Use settings from context
 
@@ -136,12 +137,20 @@ const Home = () => {
 
       {/* FLOATING QUICK-ACTION MENU */}
       <div className="floating-menu">
-        <button className="fab-main">☰</button>
-        <div className="fab-options">
-          <button onClick={() => navigate('/rooms')}>View Rooms</button>
-          <button onClick={() => navigate('/rooms')}>Quick Booking</button>
-          <button onClick={() => navigate('/contact')}>Contact</button>
-          <button onClick={() => navigate('/login')}>Login</button>
+        <button
+          className="fab-main"
+          type="button"
+          aria-expanded={isFabOpen}
+          aria-label="Toggle quick action menu"
+          onClick={() => setIsFabOpen(prev => !prev)}
+        >
+          ☰
+        </button>
+        <div className={`fab-options ${isFabOpen ? 'open' : ''}`}>
+          <button onClick={() => { setIsFabOpen(false); navigate('/rooms'); }}>View Rooms</button>
+          <button onClick={() => { setIsFabOpen(false); navigate('/rooms'); }}>Quick Booking</button>
+          <button onClick={() => { setIsFabOpen(false); navigate('/contact'); }}>Contact</button>
+          <button onClick={() => { setIsFabOpen(false); navigate('/login'); }}>Login</button>
         </div>
       </div>
 

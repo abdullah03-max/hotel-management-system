@@ -1,5 +1,32 @@
 import { User } from '../models/User.js';
+import { OAuth2Client } from 'google-auth-library';
 import { generateToken, generateRefreshToken, asyncHandler } from '../middleware/authMiddleware.js';
+
+const buildAuthResponse = (user) => {
+  const token = generateToken(user._id);
+  const refreshToken = generateRefreshToken(user._id);
+
+  return {
+    _id: user._id,
+    name: user.name,
+    email: user.email,
+    phone: user.phone,
+    role: user.role,
+    address: user.address,
+    profilePicture: user.profilePicture,
+    authProvider: user.authProvider,
+    token,
+    refreshToken
+  };
+};
+
+const getGoogleClient = () => {
+  if (!process.env.GOOGLE_CLIENT_ID) {
+    throw new Error('GOOGLE_CLIENT_ID is not configured');
+  }
+
+  return new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+};
 
 // @desc    Register user
 // @route   POST /api/auth/register
@@ -29,20 +56,9 @@ export const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (user) {
-    const token = generateToken(user._id);
-    const refreshToken = generateRefreshToken(user._id);
-
     res.status(201).json({
       success: true,
-      data: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
-        role: user.role,
-        token,
-        refreshToken
-      },
+      data: buildAuthResponse(user),
       message: 'User registered successfully'
     });
   } else {
@@ -73,20 +89,9 @@ export const loginUser = asyncHandler(async (req, res) => {
     // Update last login
     await user.updateLastLogin();
 
-    const token = generateToken(user._id);
-    const refreshToken = generateRefreshToken(user._id);
-
     res.json({
       success: true,
-      data: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
-        role: user.role,
-        token,
-        refreshToken
-      },
+      data: buildAuthResponse(user),
       message: 'Login successful'
     });
   } else {
@@ -95,6 +100,72 @@ export const loginUser = asyncHandler(async (req, res) => {
       message: 'Invalid credentials'
     });
   }
+});
+
+// @desc    Authenticate guest with Google
+// @route   POST /api/auth/google
+// @access  Public
+export const googleAuth = asyncHandler(async (req, res) => {
+  const { idToken } = req.body;
+
+  if (!idToken) {
+    return res.status(400).json({
+      success: false,
+      message: 'Google ID token is required'
+    });
+  }
+
+  const client = getGoogleClient();
+  const ticket = await client.verifyIdToken({
+    idToken,
+    audience: process.env.GOOGLE_CLIENT_ID
+  });
+
+  const payload = ticket.getPayload();
+
+  if (!payload?.email || !payload.sub) {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid Google account payload'
+    });
+  }
+
+  let user = await User.findOne({ email: payload.email.toLowerCase() });
+
+  if (user && user.role !== 'guest' && !user.googleId) {
+    return res.status(403).json({
+      success: false,
+      message: 'Google sign-in is only available for guest accounts'
+    });
+  }
+
+  if (!user) {
+    user = await User.create({
+      name: payload.name || payload.email.split('@')[0],
+      email: payload.email.toLowerCase(),
+      googleId: payload.sub,
+      authProvider: 'google',
+      role: 'guest',
+      profilePicture: payload.picture,
+      isActive: true,
+      status: 'active'
+    });
+  } else {
+    user.googleId = payload.sub;
+    user.authProvider = 'google';
+    user.profilePicture = payload.picture || user.profilePicture;
+    user.isActive = true;
+    user.status = 'active';
+    await user.save();
+  }
+
+  await user.updateLastLogin();
+
+  res.json({
+    success: true,
+    data: buildAuthResponse(user),
+    message: 'Google sign-in successful'
+  });
 });
 
 // @desc    Get current logged in user

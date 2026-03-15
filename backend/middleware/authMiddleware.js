@@ -1,16 +1,20 @@
 import jwt from 'jsonwebtoken';
 import { User } from '../models/User.js';
 
+const JWT_SECRET = process.env.JWT_SECRET || 'development_jwt_secret_change_me';
+const JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET || 'development_refresh_secret_change_me';
+const JWT_EXPIRE = process.env.JWT_EXPIRE || '30d';
+
 // Generate JWT Token
 export const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRE,
+  return jwt.sign({ id }, JWT_SECRET, {
+    expiresIn: JWT_EXPIRE,
   });
 };
 
 // Generate Refresh Token
 export const generateRefreshToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_REFRESH_SECRET, {
+  return jwt.sign({ id }, JWT_REFRESH_SECRET, {
     expiresIn: '30d',
   });
 };
@@ -30,7 +34,7 @@ export const protect = asyncHandler(async (req, res, next) => {
       token = req.headers.authorization.split(' ')[1];
 
       // Verify token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const decoded = jwt.verify(token, JWT_SECRET);
 
       // Get user from token
       req.user = await User.findById(decoded.id).select('-password');

@@ -1,5 +1,13 @@
 # React + Vite
 
+## Environment
+
+Create a `.env` file in the frontend directory and add:
+
+```env
+VITE_GOOGLE_CLIENT_ID=your_google_client_id_here
+```
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:

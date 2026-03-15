@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+import authRoutes from './routes/authRoutes.js';
 
 // Load env vars
 dotenv.config();
@@ -33,6 +34,8 @@ app.use(cors({
 // ✅ Body parser middleware - MUST BE BEFORE ROUTES
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: false, limit: '10mb' }));
+
+app.use('/api/auth', authRoutes);
 
 // Staff Schema - UPDATED WITH SPECIALIZATION FIELD
 const staffSchema = new mongoose.Schema({

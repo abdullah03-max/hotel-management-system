@@ -2,16 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Card from '../../components/ui/Card';
 import Button from '../../components/ui/Button';
+import { dashboardService } from '../../services/dashboardService';
+import { bookingService } from '../../services/bookingService';
 
-const Overview = () => {
+const Overview = ({ onQuickAction }) => {
   const [dashboardStats, setDashboardStats] = useState({
-    totalRevenue: 125430,
-    occupancyRate: 78,
+    totalRevenue: 0,
+    occupancyRate: 0,
     totalBookings: 0,
     availableRooms: 0,
-    staffOnline: 0,
-    maintenanceRequests: 0,
-    lowStockItems: 0
+    totalStaff: 0,
+    pendingServices: 0,
+    pendingCheckins: 0,
+    pendingCheckouts: 0
   });
 
   const [recentBookings, setRecentBookings] = useState([]);
@@ -19,31 +22,75 @@ const Overview = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate data loading
-    setTimeout(() => {
-      setRecentBookings([
-        { id: 1, guestName: 'John Doe', room: '101', checkIn: '2024-01-20', checkOut: '2024-01-25', status: 'confirmed', totalAmount: 495 },
-        { id: 2, guestName: 'Jane Smith', room: '102', checkIn: '2024-01-22', checkOut: '2024-01-24', status: 'pending', totalAmount: 298 },
-        { id: 3, guestName: 'Mike Johnson', room: '202', checkIn: '2024-01-26', checkOut: '2024-01-28', status: 'confirmed', totalAmount: 598 }
-      ]);
+    const loadDashboardData = async () => {
+      setLoading(true);
+      try {
+        const [statsResponse, occupancyResponse, bookingsResponse] = await Promise.all([
+          dashboardService.getDashboardStats(),
+          dashboardService.getOccupancyStats(),
+          bookingService.getBookings({ page: 1, limit: 1 })
+        ]);
 
-      setPendingTasks([
-        { id: 1, room: '201', issue: 'AC Not Working', priority: 'High', status: 'pending' },
-        { id: 2, room: '105', issue: 'Leaky Faucet', priority: 'Medium', status: 'in-progress' },
-        { id: 3, room: '308', issue: 'TV Remote', priority: 'Low', status: 'pending' }
-      ]);
+        const statsData = statsResponse?.data || statsResponse || {};
+        const occupancyData = occupancyResponse?.data || occupancyResponse || {};
 
-      setDashboardStats(prev => ({
-        ...prev,
-        totalBookings: 3,
-        availableRooms: 2,
-        staffOnline: 8,
-        maintenanceRequests: 3,
-        lowStockItems: 2
-      }));
+        const availableRooms = Array.isArray(statsData.roomStatus)
+          ? (statsData.roomStatus.find((status) => status._id === 'available')?.count || 0)
+          : 0;
 
-      setLoading(false);
-    }, 1000);
+        const bookings = Array.isArray(statsData.recentBookings) ? statsData.recentBookings : [];
+
+        setRecentBookings(
+          bookings.map((booking) => ({
+            id: booking._id,
+            guestName: booking.guest?.name || 'Guest',
+            room: booking.room?.roomNumber || '-',
+            status: booking.bookingStatus || 'pending',
+            totalAmount: booking.totalAmount || 0
+          }))
+        );
+
+        setPendingTasks([
+          {
+            id: 'checkin',
+            title: 'Pending Check-ins',
+            count: statsData.pendingCheckins || 0,
+            priority: 'High'
+          },
+          {
+            id: 'checkout',
+            title: 'Pending Check-outs',
+            count: statsData.pendingCheckouts || 0,
+            priority: 'Medium'
+          },
+          {
+            id: 'services',
+            title: 'Pending Service Requests',
+            count: statsData.pendingServices || 0,
+            priority: 'Low'
+          }
+        ]);
+
+        const totalBookings = bookingsResponse?.pagination?.total || 0;
+
+        setDashboardStats({
+          totalRevenue: statsData.revenueMonth || 0,
+          occupancyRate: Number(occupancyData.occupancyRate || 0),
+          totalBookings,
+          availableRooms,
+          totalStaff: statsData.totalStaff || 0,
+          pendingServices: statsData.pendingServices || 0,
+          pendingCheckins: statsData.pendingCheckins || 0,
+          pendingCheckouts: statsData.pendingCheckouts || 0
+        });
+      } catch (error) {
+        console.error('Failed to load dashboard data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadDashboardData();
   }, []);
 
   if (loading) {
@@ -82,7 +129,7 @@ const Overview = () => {
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-green-100">Occupancy Rate</p>
-                <h3 className="text-2xl font-bold mt-2">{dashboardStats.occupancyRate}%</h3>
+                <h3 className="text-2xl font-bold mt-2">{dashboardStats.occupancyRate.toFixed(1)}%</h3>
               </div>
               <div className="text-2xl">🏨</div>
             </div>
@@ -118,7 +165,7 @@ const Overview = () => {
             <div className="flex justify-between items-start">
               <div>
                 <p className="text-red-100">Staff Online</p>
-                <h3 className="text-2xl font-bold mt-2">{dashboardStats.staffOnline}</h3>
+                <h3 className="text-2xl font-bold mt-2">{dashboardStats.totalStaff}</h3>
               </div>
               <div className="text-2xl">👥</div>
             </div>
@@ -129,8 +176,8 @@ const Overview = () => {
           <div className="p-6">
             <div className="flex justify-between items-start">
               <div>
-                <p className="text-yellow-100">Low Stock Items</p>
-                <h3 className="text-2xl font-bold mt-2">{dashboardStats.lowStockItems}</h3>
+                <p className="text-yellow-100">Pending Services</p>
+                <h3 className="text-2xl font-bold mt-2">{dashboardStats.pendingServices}</h3>
               </div>
               <div className="text-2xl">📦</div>
             </div>
@@ -143,10 +190,10 @@ const Overview = () => {
         <div className="p-6">
           <h3 className="text-lg font-semibold mb-4">Quick Actions</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Button className="w-full">Add New Room</Button>
-            <Button className="w-full">Manage Staff</Button>
-            <Button className="w-full">Create Booking</Button>
-            <Button className="w-full">Check Inventory</Button>
+            <Button className="w-full" onClick={() => onQuickAction?.('rooms')}>Add New Room</Button>
+            <Button className="w-full" onClick={() => onQuickAction?.('staff')}>Manage Staff</Button>
+            <Button className="w-full" onClick={() => onQuickAction?.('bookings')}>Create Booking</Button>
+            <Button className="w-full" onClick={() => onQuickAction?.('inventory')}>Check Inventory</Button>
           </div>
         </div>
       </Card>
@@ -157,11 +204,15 @@ const Overview = () => {
           <div className="p-6">
             <h3 className="text-lg font-semibold mb-4">Recent Bookings</h3>
             <div className="space-y-3">
+              {recentBookings.length === 0 && (
+                <p className="text-sm text-gray-500">No recent bookings found.</p>
+              )}
+
               {recentBookings.map(booking => (
                 <div key={booking.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                   <div>
                     <p className="font-medium">{booking.guestName}</p>
-                    <p className="text-sm text-gray-500">Room {booking.room}</p>
+                    <p className="text-sm text-gray-500">Room {booking.room} • ${booking.totalAmount}</p>
                   </div>
                   <span className={`px-2 py-1 text-xs rounded-full ${
                     booking.status === 'confirmed' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
@@ -181,15 +232,15 @@ const Overview = () => {
               {pendingTasks.map(task => (
                 <div key={task.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                   <div>
-                    <p className="font-medium">Room {task.room}</p>
-                    <p className="text-sm text-gray-500">{task.issue}</p>
+                    <p className="font-medium">{task.title}</p>
+                    <p className="text-sm text-gray-500">Database-driven count</p>
                   </div>
                   <span className={`px-2 py-1 text-xs rounded-full ${
                     task.priority === 'High' ? 'bg-red-100 text-red-800' :
                     task.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
                     'bg-green-100 text-green-800'
                   }`}>
-                    {task.priority}
+                    {task.count}
                   </span>
                 </div>
               ))}

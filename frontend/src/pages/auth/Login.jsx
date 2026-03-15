@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../../context/AuthContext';
+import { GOOGLE_CLIENT_ID } from '../../config';
 import './Login.css'; // Import the CSS file
 
 const Login = () => {
@@ -15,7 +17,7 @@ const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   
-  const { login, user, debugUsers } = useAuth();
+  const { login, loginWithGoogle, user, debugUsers } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -222,6 +224,25 @@ const Login = () => {
     }
 
     setLoading(false);
+  };
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    setError('');
+    setLoading(true);
+
+    const result = await loginWithGoogle(credentialResponse.credential);
+
+    if (result.success) {
+      navigate('/guest/panel');
+    } else {
+      setError(result.error);
+    }
+
+    setLoading(false);
+  };
+
+  const handleGoogleError = () => {
+    setError('Google sign-in could not be completed.');
   };
 
   // Show staff role selection screen
@@ -510,6 +531,30 @@ const Login = () => {
               {loading ? 'Signing in...' : `Sign in as ${selectedRoleData?.title}`}
             </button>
           </form>
+
+          {selectedRole === 'guest' && (
+            <div className="google-auth-section">
+              <div className="auth-divider">
+                <span>or continue with</span>
+              </div>
+              {GOOGLE_CLIENT_ID ? (
+                <div className="google-login-wrapper">
+                  <GoogleLogin
+                    onSuccess={handleGoogleSuccess}
+                    onError={handleGoogleError}
+                    theme="outline"
+                    text="continue_with"
+                    shape="pill"
+                    width="100%"
+                  />
+                </div>
+              ) : (
+                <p className="google-auth-note">
+                  Set VITE_GOOGLE_CLIENT_ID in your frontend environment to enable Google sign-in.
+                </p>
+              )}
+            </div>
+          )}
 
           {/* Demo Credentials */}
           <div className="demo-credentials-panel">

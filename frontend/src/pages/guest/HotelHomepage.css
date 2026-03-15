@@ -29,6 +29,7 @@ body, html {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 16px;
 }
 
 .logo {
@@ -89,10 +90,13 @@ body, html {
   bottom: 15%;
   left: 8%;
   color: white;
+  max-width: 680px;
+  padding-right: 20px;
 }
 
 .hero-content h2 {
   font-size: 48px;
+  line-height: 1.1;
   margin: 0 0 10px;
 }
 
@@ -240,6 +244,10 @@ body, html {
   display: flex;
 }
 
+.fab-options.open {
+  display: flex;
+}
+
 .fab-options button {
   background: white;
   border: 1px solid #d4a762;
@@ -267,6 +275,12 @@ body, html {
 .footer-content {
   display: flex;
   justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.footer-section {
+  flex: 1 1 220px;
 }
 
 .footer-section h3,
@@ -297,6 +311,21 @@ body, html {
    RESPONSIVE DESIGN
 ========================= */
 @media (max-width: 900px) {
+  .header {
+    padding: 14px 0;
+  }
+
+  .nav {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .nav-btn {
+    margin-left: 0;
+  }
+
   .about-container {
     flex-direction: column;
     text-align: center;
@@ -313,18 +342,90 @@ body, html {
   .hero-content h2 {
     font-size: 30px;
   }
+
+  .hero-content {
+    left: 6%;
+    right: 6%;
+    bottom: 12%;
+    max-width: none;
+  }
+
+  .footer-content {
+    gap: 20px;
+  }
 }
 
 @media (max-width: 600px) {
+  .container {
+    width: 92%;
+  }
+
+  .nav-container {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .logo {
+    font-size: 22px;
+  }
+
+  .nav {
+    width: 100%;
+  }
+
+  .nav-btn {
+    flex: 1;
+    padding: 8px 12px;
+  }
+
+  .hero {
+    height: 78vh;
+    min-height: 540px;
+  }
+
   .gallery-grid {
     grid-template-columns: 1fr;
   }
 
   .hero-content {
-    bottom: 10%;
+    bottom: 8%;
+    left: 5%;
+    right: 5%;
+    padding-right: 0;
   }
 
-  .logo {
-    font-size: 22px;
+  .hero-content h2 {
+    font-size: 28px;
+  }
+
+  .hero-content p {
+    font-size: 16px;
+  }
+
+  .cta-button {
+    width: 100%;
+    max-width: 260px;
+  }
+
+  .about {
+    padding: 56px 0;
+  }
+
+  .gallery,
+  .footer {
+    padding-top: 56px;
+  }
+
+  .floating-menu {
+    bottom: 20px;
+    right: 16px;
+  }
+
+  .fab-options button {
+    min-width: 150px;
+  }
+
+  .footer-section {
+    flex-basis: 100%;
   }
 }

@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { GoogleLogin } from '@react-oauth/google';
 import { useAuth } from '../../context/AuthContext';
+import { GOOGLE_CLIENT_ID } from '../../config';
 import './Register.css'; // Import the CSS file
 
 const Register = () => {
@@ -18,7 +20,7 @@ const Register = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   
-  const { register } = useAuth();
+  const { register, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -64,6 +66,25 @@ const Register = () => {
     }
 
     setLoading(false);
+  };
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+    setError('');
+    setLoading(true);
+
+    const result = await loginWithGoogle(credentialResponse.credential);
+
+    if (result.success) {
+      navigate(redirectTo);
+    } else {
+      setError(result.error);
+    }
+
+    setLoading(false);
+  };
+
+  const handleGoogleError = () => {
+    setError('Google sign-up could not be completed.');
   };
 
   return (
@@ -294,6 +315,28 @@ const Register = () => {
                   : 'Create Account'
               }
             </button>
+
+            <div className="google-auth-section">
+              <div className="auth-divider">
+                <span>or continue with</span>
+              </div>
+              {GOOGLE_CLIENT_ID ? (
+                <div className="google-login-wrapper">
+                  <GoogleLogin
+                    onSuccess={handleGoogleSuccess}
+                    onError={handleGoogleError}
+                    theme="outline"
+                    text="signup_with"
+                    shape="pill"
+                    width="100%"
+                  />
+                </div>
+              ) : (
+                <p className="google-auth-note">
+                  Set VITE_GOOGLE_CLIENT_ID in your frontend environment to enable Google sign-up.
+                </p>
+              )}
+            </div>
 
             <div className="register-login-link">
               <p className="register-login-text">
