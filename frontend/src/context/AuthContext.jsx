@@ -191,6 +191,109 @@ export const AuthProvider = ({ children }) => {
     console.log('✅ AuthProvider ready');
   }, []);
 
+  const syncGuestForAdminPanel = (userData) => {
+    try {
+      if (!userData || userData.role !== 'guest') {
+        return;
+      }
+
+      const storedGuests = JSON.parse(localStorage.getItem('hotelGuests') || '[]');
+      const existingGuest = storedGuests.find((guest) => String(guest.id) === String(userData.id));
+
+      if (existingGuest) {
+        const updatedGuests = storedGuests.map((guest) => {
+          if (String(guest.id) !== String(userData.id)) {
+            return guest;
+          }
+
+          return {
+            ...guest,
+            name: userData.name || guest.name,
+            email: userData.email || guest.email,
+            phone: userData.phone || guest.phone || '',
+            address: userData.address || guest.address || '',
+            status: guest.status || 'active',
+            loyaltyStatus: guest.loyaltyStatus || 'member',
+            lastVisit: new Date().toISOString().split('T')[0]
+          };
+        });
+
+        localStorage.setItem('hotelGuests', JSON.stringify(updatedGuests));
+        return;
+      }
+
+      const newGuest = {
+        id: userData.id,
+        name: userData.name,
+        email: userData.email,
+        phone: userData.phone || '',
+        address: userData.address || '',
+        city: '',
+        country: '',
+        totalBookings: 0,
+        lastVisit: new Date().toISOString().split('T')[0],
+        status: 'active',
+        loyaltyStatus: 'member',
+        registrationDate: new Date().toISOString()
+      };
+
+      localStorage.setItem('hotelGuests', JSON.stringify([...storedGuests, newGuest]));
+    } catch (error) {
+      console.error('Error syncing guest for admin panel:', error);
+    }
+  };
+
+  const syncGuestIntoRegisteredUsers = (userData) => {
+    try {
+      if (!userData || userData.role !== 'guest') {
+        return;
+      }
+
+      const users = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+      const existing = users.find((u) => String(u.id) === String(userData.id) || u.email === userData.email);
+
+      if (existing) {
+        const updatedUsers = users.map((u) => {
+          if (String(u.id) !== String(existing.id) && u.email !== userData.email) {
+            return u;
+          }
+
+          return {
+            ...u,
+            id: u.id || userData.id,
+            name: userData.name || u.name,
+            email: userData.email || u.email,
+            phone: userData.phone || u.phone || '',
+            address: userData.address || u.address || '',
+            role: 'guest',
+            status: u.status || 'active',
+            authProvider: userData.authProvider || u.authProvider || 'local',
+            createdAt: u.createdAt || new Date().toISOString()
+          };
+        });
+
+        localStorage.setItem('registeredUsers', JSON.stringify(updatedUsers));
+        return;
+      }
+
+      const newGuestUser = {
+        id: userData.id,
+        name: userData.name,
+        email: userData.email,
+        phone: userData.phone || '',
+        address: userData.address || '',
+        role: 'guest',
+        status: 'active',
+        authProvider: userData.authProvider || 'local',
+        createdAt: new Date().toISOString()
+      };
+
+      localStorage.setItem('registeredUsers', JSON.stringify([...users, newGuestUser]));
+    } catch (error) {
+      console.error('Error syncing guest into registeredUsers:', error);
+    }
+  };
+
   const persistAuthenticatedUser = (authPayload) => {
     const userData = {
       id: authPayload._id,
@@ -214,6 +317,8 @@ export const AuthProvider = ({ children }) => {
     }
 
     localStorage.setItem('currentUser', JSON.stringify(userData));
+    syncGuestForAdminPanel(userData);
+    syncGuestIntoRegisteredUsers(userData);
     setUser(userData);
 
     return userData;
@@ -247,6 +352,35 @@ export const AuthProvider = ({ children }) => {
           }
           foundUser = staffResult;
           console.log('✅ Staff user found in database:', staffResult);
+        }
+      }
+
+      // Fallback to backend authentication (used for verified email/password guest accounts)
+      if (!foundUser) {
+        try {
+          const backendResult = await authService.login(credentials);
+          if (backendResult?.success && backendResult?.data) {
+            if (selectedRole && backendResult.data.role !== selectedRole) {
+              return {
+                success: false,
+                error: `This account is registered as ${backendResult.data.role}, not ${selectedRole}. Please select the correct role.`
+              };
+            }
+
+            const authenticatedUser = persistAuthenticatedUser(backendResult.data);
+            return {
+              success: true,
+              user: authenticatedUser,
+              message: backendResult.message || 'Login successful.'
+            };
+          }
+        } catch (backendError) {
+          if (backendError?.response?.data?.message) {
+            return {
+              success: false,
+              error: backendError.response.data.message
+            };
+          }
         }
       }
 
@@ -367,83 +501,81 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (userData) => {
     try {
-      console.log('📝 REGISTRATION ATTEMPT:', userData.email);
-      
-      const existingUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
-      const userExists = existingUsers.find(u => u.email === userData.email);
-      
-      if (userExists) {
-        console.log('❌ Registration failed: User already exists');
-        return { success: false, error: 'User with this email already exists' };
+      const payload = {
+        ...userData,
+        role: 'guest'
+      };
+
+      const result = await authService.register(payload);
+
+      if (result?.success && result?.requiresEmailVerification) {
+        return {
+          success: true,
+          requiresEmailVerification: true,
+          email: result?.data?.email || userData.email,
+          verificationCode: result?.data?.verificationCode,
+          message: result?.message || 'Verification code sent. Please verify your email.'
+        };
       }
 
-      // Create new user with complete guest information
-      const newUser = {
-        id: Date.now(),
-        name: userData.name,
-        email: userData.email,
-        password: userData.password,
-        role: 'guest',
-        phone: userData.phone || '',
-        address: userData.address || '',
-        city: userData.city || '',
-        postalCode: userData.postalCode || '',
-        country: userData.country || '',
-        totalBookings: 0,
-        lastVisit: new Date().toISOString().split('T')[0],
-        status: 'active',
-        createdAt: new Date().toISOString()
-      };
-      
-      // Save to registered users
-      existingUsers.push(newUser);
-      localStorage.setItem('registeredUsers', JSON.stringify(existingUsers));
-      
-      console.log('✅ USER SAVED TO REGISTERED USERS:', newUser);
-      
-      // ✅ CRITICAL FIX: Save to hotelGuests for admin panel
-      const existingGuests = JSON.parse(localStorage.getItem('hotelGuests') || '[]');
-      
-      // Check if guest already exists in hotelGuests
-      const guestExists = existingGuests.find(guest => guest.email === newUser.email);
-      
-      if (!guestExists) {
-        const guestData = {
-          id: newUser.id,
-          name: newUser.name,
-          email: newUser.email,
-          phone: newUser.phone || 'Not provided',
-          address: `${newUser.address || ''}${newUser.city ? ', ' + newUser.city : ''}${newUser.postalCode ? ', ' + newUser.postalCode : ''}${newUser.country ? ', ' + newUser.country : ''}`.trim(),
-          totalBookings: 0,
-          lastVisit: new Date().toISOString().split('T')[0],
-          status: 'active',
-          registrationDate: new Date().toISOString(),
-          guestSince: new Date().toISOString().split('T')[0]
-        };
-        
-        existingGuests.push(guestData);
-        localStorage.setItem('hotelGuests', JSON.stringify(existingGuests));
-        console.log('✅ GUEST DATA SAVED TO HOTELGUESTS FOR ADMIN PANEL');
+      if (result?.success && result?.data) {
+        const authenticatedUser = persistAuthenticatedUser(result.data);
+        return { success: true, user: authenticatedUser };
       }
-      
-      // Auto-login after registration
-      const token = 'hotel-token-' + Date.now();
-      localStorage.setItem('token', token);
-      localStorage.setItem('currentUser', JSON.stringify(newUser));
-      setUser(newUser);
-      
-      // Initialize empty bookings for new user
-      localStorage.setItem(`bookings_${newUser.id}`, JSON.stringify([]));
-      
-      console.log('✅ REGISTRATION SUCCESSFUL:', newUser);
-      console.log('📋 Updated registered users count:', existingUsers.length);
-      console.log('📋 Updated hotel guests count:', existingGuests.length);
-      
-      return { success: true, user: newUser };
+
+      return {
+        success: false,
+        error: result?.message || 'Registration failed. Please try again.'
+      };
 
     } catch (error) {
       console.error('💥 REGISTRATION ERROR:', error);
-      return { success: false, error: 'Registration failed. Please try again.' };
+      return {
+        success: false,
+        error: error?.response?.data?.message || 'Registration failed. Please try again.'
+      };
+    }
+  };
+
+  const verifyEmail = async (email, code) => {
+    try {
+      const result = await authService.verifyEmail({ email, code });
+
+      if (!result?.success || !result?.data) {
+        return {
+          success: false,
+          error: result?.message || 'Email verification failed.'
+        };
+      }
+
+      const authenticatedUser = persistAuthenticatedUser(result.data);
+
+      return {
+        success: true,
+        user: authenticatedUser,
+        message: result.message || 'Email verified successfully.'
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error?.response?.data?.message || 'Email verification failed.'
+      };
+    }
+  };
+
+  const resendVerificationCode = async (email) => {
+    try {
+      const result = await authService.resendVerificationCode({ email });
+      return {
+        success: !!result?.success,
+        verificationCode: result?.data?.verificationCode,
+        message: result?.message || 'Verification code sent.'
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error?.response?.data?.message || 'Unable to resend verification code.'
+      };
     }
   };
 
@@ -480,6 +612,8 @@ export const AuthProvider = ({ children }) => {
     user,
     login,
     register,
+    verifyEmail,
+    resendVerificationCode,
     loginWithGoogle,
     logout,
     loading,

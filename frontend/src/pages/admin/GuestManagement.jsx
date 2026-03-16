@@ -36,6 +36,32 @@ const GuestManagement = () => {
       
       // Load from hotelGuests (primary source for admin panel)
       let guestData = JSON.parse(localStorage.getItem('hotelGuests') || '[]');
+
+      // Fallback: derive guests from registered users (covers Google-auth guests synced in auth context)
+      if (!guestData.length) {
+        const registeredUsers = JSON.parse(localStorage.getItem('registeredUsers') || '[]');
+        guestData = registeredUsers
+          .filter((user) => user.role === 'guest')
+          .map((user) => ({
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            phone: user.phone || '',
+            address: user.address || '',
+            city: user.city || '',
+            country: user.country || '',
+            dateOfBirth: user.dateOfBirth || '',
+            totalBookings: 0,
+            lastVisit: user.lastVisit || new Date().toISOString().split('T')[0],
+            status: user.status || 'active',
+            loyaltyStatus: user.loyaltyStatus || 'member',
+            registrationDate: user.createdAt || new Date().toISOString()
+          }));
+
+        if (guestData.length) {
+          localStorage.setItem('hotelGuests', JSON.stringify(guestData));
+        }
+      }
       
       console.log('📊 Loaded guests from hotelGuests:', guestData.length);
       

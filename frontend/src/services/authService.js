@@ -19,6 +19,18 @@ export const authService = {
     return response.data;
   },
 
+  // Verify email with OTP code
+  verifyEmail: async (payload) => {
+    const response = await api.post('/auth/verify-email', payload);
+    return response.data;
+  },
+
+  // Resend verification code
+  resendVerificationCode: async (payload) => {
+    const response = await api.post('/auth/resend-verification', payload);
+    return response.data;
+  },
+
   // Get current user
   getMe: async () => {
     const response = await api.get('/auth/me');

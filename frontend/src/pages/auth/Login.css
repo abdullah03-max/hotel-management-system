@@ -627,10 +627,11 @@
 .google-login-wrapper {
   display: flex;
   justify-content: center;
+  min-height: 44px;
 }
 
 .google-login-wrapper > div {
-  width: 100%;
+  width: min(100%, 360px);
 }
 
 .google-auth-note {

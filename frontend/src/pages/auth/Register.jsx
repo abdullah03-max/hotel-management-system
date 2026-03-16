@@ -18,9 +18,14 @@ const Register = () => {
     country: ''
   });
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+  const [requiresVerification, setRequiresVerification] = useState(false);
+  const [verificationEmail, setVerificationEmail] = useState('');
+  const [verificationCode, setVerificationCode] = useState('');
+  const [devVerificationCode, setDevVerificationCode] = useState('');
   
-  const { register, loginWithGoogle } = useAuth();
+  const { register, verifyEmail, resendVerificationCode, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   
@@ -38,6 +43,7 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
 
     // Validation
     if (formData.password !== formData.confirmPassword) {
@@ -54,6 +60,14 @@ const Register = () => {
       const result = await register(formData);
       
       if (result.success) {
+        if (result.requiresEmailVerification) {
+          setRequiresVerification(true);
+          setVerificationEmail(result.email || formData.email);
+          setDevVerificationCode(result.verificationCode || '');
+          setSuccess(result.message || 'Verification code sent to your email.');
+          return;
+        }
+
         console.log('✅ Registration successful, redirecting to guest panel...');
         setTimeout(() => {
           navigate(redirectTo);
@@ -70,6 +84,7 @@ const Register = () => {
 
   const handleGoogleSuccess = async (credentialResponse) => {
     setError('');
+    setSuccess('');
     setLoading(true);
 
     const result = await loginWithGoogle(credentialResponse.credential);
@@ -85,6 +100,48 @@ const Register = () => {
 
   const handleGoogleError = () => {
     setError('Google sign-up could not be completed.');
+  };
+
+  const handleVerifySubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSuccess('');
+
+    if (!verificationCode.trim()) {
+      setError('Please enter the verification code.');
+      return;
+    }
+
+    setLoading(true);
+    const result = await verifyEmail(verificationEmail, verificationCode.trim());
+
+    if (result.success) {
+      setSuccess('Email verified successfully. Redirecting...');
+      setTimeout(() => {
+        navigate(redirectTo);
+      }, 300);
+    } else {
+      setError(result.error);
+    }
+
+    setLoading(false);
+  };
+
+  const handleResendCode = async () => {
+    setError('');
+    setSuccess('');
+    setLoading(true);
+
+    const result = await resendVerificationCode(verificationEmail);
+
+    if (result.success) {
+      setDevVerificationCode(result.verificationCode || '');
+      setSuccess(result.message || 'Verification code sent again.');
+    } else {
+      setError(result.error);
+    }
+
+    setLoading(false);
   };
 
   return (
@@ -146,6 +203,47 @@ const Register = () => {
               {error}
             </div>
           )}
+
+          {success && (
+            <div className="register-success">
+              {success}
+            </div>
+          )}
+
+          {requiresVerification ? (
+            <form className="register-form" onSubmit={handleVerifySubmit}>
+              <div className="verify-panel">
+                <h3 className="verify-title">Verify Your Email</h3>
+                <p className="verify-text">We sent a 6-digit code to <strong>{verificationEmail}</strong>.</p>
+
+                {devVerificationCode && (
+                  <p className="verify-dev-code">Development code: {devVerificationCode}</p>
+                )}
+
+                <div className="form-row">
+                  <label htmlFor="verificationCode" className="form-label">Verification Code</label>
+                  <input
+                    id="verificationCode"
+                    type="text"
+                    maxLength={6}
+                    value={verificationCode}
+                    onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ''))}
+                    className="form-input"
+                    placeholder="Enter 6-digit code"
+                    required
+                  />
+                </div>
+              </div>
+
+              <button type="submit" disabled={loading} className="register-submit-btn">
+                {loading ? 'Verifying...' : 'Verify Email'}
+              </button>
+
+              <button type="button" disabled={loading} className="resend-code-btn" onClick={handleResendCode}>
+                Resend Code
+              </button>
+            </form>
+          ) : (
 
           <form className="register-form" onSubmit={handleSubmit}>
             <div className="form-grid">
@@ -328,7 +426,8 @@ const Register = () => {
                     theme="outline"
                     text="signup_with"
                     shape="pill"
-                    width="100%"
+                    size="large"
+                    width="360"
                   />
                 </div>
               ) : (
@@ -351,6 +450,7 @@ const Register = () => {
               </p>
             </div>
           </form>
+          )}
         </div>
       </div>
     </div>

@@ -9,6 +9,8 @@ export default defineConfig({
     'process.env': {}
   },
   server: {
+    port: 5173,
+    strictPort: true,
     fs: {
       // Allow serving files from one level up to the project root
       allow: ['..']

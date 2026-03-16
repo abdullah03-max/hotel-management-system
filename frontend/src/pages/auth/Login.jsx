@@ -545,7 +545,8 @@ const Login = () => {
                     theme="outline"
                     text="continue_with"
                     shape="pill"
-                    width="100%"
+                    size="large"
+                    width="360"
                   />
                 </div>
               ) : (

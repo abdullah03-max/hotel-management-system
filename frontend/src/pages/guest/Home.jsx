@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useGoogleOneTapLogin } from '@react-oauth/google';
 import { useSettings } from '../../context/SettingsContext'; // Add this import
+import { useAuth } from '../../context/AuthContext';
+import { GOOGLE_CLIENT_ID } from '../../config';
 import './HotelHomepage.css';
 
 const Home = () => {
@@ -8,6 +11,7 @@ const Home = () => {
   const [isFabOpen, setIsFabOpen] = useState(false);
   const navigate = useNavigate();
   const { settings } = useSettings(); // Use settings from context
+  const { user, loginWithGoogle } = useAuth();
 
   // Hero Images
   const heroImages = [
@@ -59,6 +63,23 @@ const Home = () => {
     }, 5000);
     return () => clearInterval(interval);
   }, []);
+
+  useGoogleOneTapLogin({
+    onSuccess: async (credentialResponse) => {
+      if (!credentialResponse?.credential) {
+        return;
+      }
+
+      const result = await loginWithGoogle(credentialResponse.credential);
+      if (result?.success) {
+        navigate('/guest/panel');
+      }
+    },
+    onError: () => {
+      // Keep silent; One Tap can fail if blocked by browser/privacy settings.
+    },
+    disabled: !GOOGLE_CLIENT_ID || !!user
+  });
 
   return (
     <div className="hotel-homepage">
